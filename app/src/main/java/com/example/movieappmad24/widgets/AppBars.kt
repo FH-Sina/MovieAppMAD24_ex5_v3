@@ -19,7 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun SimpleTopAppBar(
     title: String,
     navigationIcons: @Composable () -> Unit = {},
-){
+) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -42,14 +42,21 @@ fun SimpleBottomAppBar(navController: NavController) {
 
     NavigationBar {
         screens.forEach { screen ->
-            NavigationBarItem(label = { Text(screen.title) },
+            NavigationBarItem(
+                label = { Text(screen.title) },
                 selected = currentDestination?.hierarchy?.any {
                     it.route == screen.route
                 } == true,
-                onClick = { navController.navigate(screen.route) },
+                onClick = {
+                    if (currentDestination != null) {
+                        if (!currentDestination.hierarchy.any { it.route == screen.route }) {
+                            navController.navigate(screen.route)
+                        }
+                    }
+                },
                 icon = { Icon(
                     imageVector = screen.icon,
-                    contentDescription = screen.title
+                    contentDescription = "${screen.title} screen"
                 )}
             )
         }

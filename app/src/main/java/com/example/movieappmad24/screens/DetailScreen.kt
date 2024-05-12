@@ -11,12 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -24,59 +19,53 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import androidx.navigation.NavController
-import com.example.movieappmad24.viewmodels.MoviesViewModel
+import com.example.movieappmad24.viewmodels.ViewModelDetail
 import com.example.movieappmad24.widgets.HorizontalScrollableImageView
 import com.example.movieappmad24.widgets.MovieRow
 import com.example.movieappmad24.widgets.SimpleTopAppBar
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 
 @Composable
 fun DetailScreen(
     movieId: String?,
     navController: NavController,
-    moviesViewModel: MoviesViewModel
+    viewModelDetail: ViewModelDetail
 ) {
-
-    movieId?.let {
-        val movie = moviesViewModel.movies.filter { movie -> movie.id == movieId }[0]
-
-
-        Scaffold (
-            topBar = {
-                SimpleTopAppBar(title = movie.title) {
+    movieId?.let { id ->
+        LaunchedEffect(movieId) {
+            viewModelDetail.getMovieById(movieId)
+        }
+        val movieState by viewModelDetail.movie.collectAsState()
+        movieState?.let { movieWithImage ->
+            Scaffold(topBar = {
+                SimpleTopAppBar(title = movieWithImage.movie.title) {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Go back"
-                        )
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "Go back")
                     }
                 }
-            }
-        ){ innerPadding ->
-            Column {
-                MovieRow(
-                    modifier = Modifier.padding(innerPadding),
-                    movie = movie,
-                    onFavoriteClick = { id -> moviesViewModel.toggleFavoriteMovie(id) }
-                )
-
-                Divider(modifier = Modifier.padding(4.dp))
-
+            }) { innerPadding ->
                 Column {
-                    Text("Movie Trailer")
-                    VideoPlayer(trailerURL = movie.trailer)
+                    MovieRow(
+                        movieWithImages = movieWithImage,
+                        modifier = Modifier.padding(innerPadding),
+                        onFavoriteClick = { viewModelDetail.updateFavorite(movieWithImage.movie) }
+                    )
+                    Divider(modifier = Modifier.padding(4.dp))
+                    Column {
+                        Text("Movie Trailer")
+                        VideoPlayer(trailerURL = movieWithImage.movie.trailer)
+                    }
+                    Divider(modifier = Modifier.padding(4.dp))
+                    HorizontalScrollableImageView(movieWithImages = movieWithImage)
                 }
-
-                Divider(modifier = Modifier.padding(4.dp))
-
-                HorizontalScrollableImageView(movie = movie)
             }
         }
     }
 }
+
 
 @Composable
 fun VideoPlayer(trailerURL: String){

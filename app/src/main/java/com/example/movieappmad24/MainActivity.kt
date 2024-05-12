@@ -8,6 +8,7 @@ import com.example.movieappmad24.navigation.Navigation
 import com.example.movieappmad24.ui.theme.MovieAppMAD24Theme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -15,35 +16,46 @@ class MainActivity : ComponentActivity() {
                 Navigation()
             }
         }
+        logEvent("onCreate")
     }
 
     override fun onStart() {
         super.onStart()
-        Log.i("MainActivity", "onStart called.")
+        logEvent("onStart")
     }
+
 
     override fun onResume() {
         super.onResume()
-        Log.i("MainActivity", "onResume called.")
+        logEvent("onResume")
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.i("MainActivity", "onPause called.")
-    }
 
     override fun onStop() {
         super.onStop()
-        Log.i("MainActivity", "onStop called.")
+        logEvent("onStop")
     }
+
+
+    override fun onPause() {
+        super.onPause()
+        logEvent("onPause")
+    }
+
 
     override fun onRestart() {
         super.onRestart()
-        Log.i("MainActivity", "onRestart called.")
+        logEvent("onRestart")
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.i("MainActivity", "onDestroy called.")
+        logEvent("onDestroy")
+    }
+
+
+    private fun logEvent(lifecycleEvent: String) {
+        Log.i("MainActivity", "$lifecycleEvent called.")
     }
 }

@@ -11,13 +11,13 @@ sealed class BottomBarScreen(
     val title: String,
     val icon: ImageVector
 ) {
-    object Home: BottomBarScreen(
+    object Home : BottomBarScreen(
         route = Screen.HomeScreen.route,
         title = "Home",
         icon = Icons.Filled.Home
     )
 
-    object Watchlist: BottomBarScreen(
+    object Watchlist : BottomBarScreen(
         route = Screen.WatchlistScreen.route,
         title = "Watchlist",
         icon = Icons.Filled.Star
